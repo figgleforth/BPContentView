@@ -8,30 +8,20 @@
 
 #import "BPViewController.h"
 
-@interface BPViewController ()
-
-@end
-
 @implementation BPViewController
-@synthesize contentView;
-@synthesize myLabel;
-@synthesize myButton;
 
 - (id)init {
     self = [super init];
     if(self){
-        self.contentView = [[BPContentView alloc] initWithSuperView:self.view andDelegate:self];
+        self.contentView = [[BPContentView alloc] initWithDelegate:self superView:self.view];
         [self.view addSubview:self.contentView];
+                        
+        self.changeStateButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [self.changeStateButton setTitle:@"Go Hidden" forState:UIControlStateNormal];
+        [self.changeStateButton addTarget:self action:@selector(changeState:) forControlEvents:UIControlEventTouchUpInside];
+        [self.changeStateButton setFrame:CGRectMake(5, 5, 120, 39)];
+        [self.contentView addSubview:self.changeStateButton];
         
-        self.myLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, self.contentView.frame.size.width-20, 34)];
-        [self.myLabel setBackgroundColor:[UIColor clearColor]];
-        [self.contentView addSubview:self.myLabel];
-        
-        self.myButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        [self.myButton setFrame:CGRectMake(self.contentView.frame.size.width-130, 10, 120, 30)];
-        [self.myButton setTitle:@"Initial State" forState:UIControlStateNormal];
-        [self.myButton addTarget:self action:@selector(goToInitialState) forControlEvents:UIControlEventTouchUpInside];
-        [self.contentView addSubview:self.myButton];
     }
     return self;
 }
@@ -42,29 +32,32 @@
 }
 
 #pragma mark myButton Callback
-- (void)goToInitialState {
-    [self.contentView enterState:kInitialState];
+- (void)changeState:(UIButton*)sender {
+    switch (self.contentView.currentState) {
+        case BPContentViewStateInitial:
+            [self.contentView setState:BPContentViewStateHidden];
+            break;
+        case BPContentViewStateFull:
+            [self.contentView setState:BPContentViewStateHidden];
+            break;
+        case BPContentViewStateHidden:
+            [self.contentView setState:BPContentViewStateFull];
+            break;
+    }
 }
 
 #pragma mark BPContentView Delegate
 - (void)contentView:(BPContentView *)contentView didEnterState:(BPContentViewState)state {
     switch (state) {
-        case kHiddenState:
-            [self.contentView setBackgroundColor:[UIColor greenColor]];
-            [self.myLabel setText:@"Hidden State"];
-            [self.myLabel setTextColor:[UIColor blackColor]];
+        case BPContentViewStateHidden:
+            [self.changeStateButton setTitle:@"Go Full" forState:UIControlStateNormal];
             break;
             
-        case kFullState:
-            [self.contentView setBackgroundColor:[UIColor redColor]];
-            [self.myLabel setText:@"Full State"];
-            [self.myLabel setTextColor:[UIColor whiteColor]];
+        case BPContentViewStateFull:
+            [self.changeStateButton setTitle:@"Go Hidden" forState:UIControlStateNormal];
             break;
             
-        case kInitialState:
-            [self.contentView setBackgroundColor:[UIColor blueColor]];
-            [self.myLabel setText:@"Initial State"];
-            [self.myLabel setTextColor:[UIColor whiteColor]];
+        case BPContentViewStateInitial:
             break;
     }
 }

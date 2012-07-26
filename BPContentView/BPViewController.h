@@ -11,8 +11,7 @@
 
 @interface BPViewController : UIViewController <BPContentViewDelegate>
 
-@property (nonatomic, retain) BPContentView *contentView;
-@property (nonatomic, retain) UILabel *myLabel;
-@property (nonatomic, retain) UIButton *myButton;
+@property BPContentView *contentView;
+@property UIButton *changeStateButton;
 
 @end
